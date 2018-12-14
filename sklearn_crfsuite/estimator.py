@@ -226,7 +226,7 @@ class CRF(BaseEstimator):
 
     def __init__(self,
                  model_type=_LINE_CHAIN_CRF,
-                 algorithm=None,
+                 algorithm='lbfgs',
                  min_freq=None,
                  all_possible_states=None,
                  all_possible_transitions=None,
@@ -326,8 +326,9 @@ class CRF(BaseEstimator):
 
         trainer = self._get_trainer()
         trainer.select(self.algorithm, self.model_type)
-        trainer.set('feature.max_seg_len', str(self.max_seg_len))
-        trainer.set('feature.max_order', str(self.max_order))
+        if self.model_type == self.SEMI_MARKOV_CRF:
+            trainer.set('feature.max_seg_len', str(self.max_seg_len))
+            trainer.set('feature.max_order', str(self.max_order))
         train_data = zip(X, y)
 
         if self.verbose:
