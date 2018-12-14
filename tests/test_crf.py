@@ -13,7 +13,7 @@ ALGORITHMS =  ["lbfgs", "l2sgd", "pa", "ap", "arow"]
 
 @pytest.mark.parametrize("algorithm", ALGORITHMS)
 def test_crf(xseq, yseq, algorithm):
-    crf = CRF(algorithm)
+    crf = CRF(algorithm=algorithm)
     crf.fit([xseq], [yseq])
 
     y_pred = crf.predict([xseq])
@@ -24,7 +24,7 @@ def test_crf(xseq, yseq, algorithm):
 @pytest.mark.parametrize("algorithm", ALGORITHMS)
 @pytest.mark.parametrize("use_dev", [True, False])
 def test_crf_verbose(xseq, yseq, algorithm, use_dev):
-    crf = CRF(algorithm, verbose=True)
+    crf = CRF(algorithm=algorithm, verbose=True)
 
     if use_dev:
         X_dev, y_dev = [xseq], [yseq]
@@ -44,7 +44,7 @@ def test_crf_verbose(xseq, yseq, algorithm, use_dev):
 
 @pytest.mark.parametrize("algorithm", ALGORITHMS)
 def test_crf_marginals(xseq, yseq, algorithm):
-    crf = CRF(algorithm)
+    crf = CRF(algorithm=algorithm)
     crf.fit([xseq], [yseq])
 
     y_pred_marginals = crf.predict_marginals([xseq])
@@ -61,14 +61,14 @@ def test_crf_marginals(xseq, yseq, algorithm):
 
 @pytest.mark.parametrize("algorithm", ALGORITHMS)
 def test_predict_without_fit(xseq, algorithm):
-    crf = CRF(algorithm)
+    crf = CRF(algorithm=algorithm)
     with pytest.raises(Exception):
         crf.predict([xseq])
 
 
 @pytest.mark.parametrize("algorithm", ALGORITHMS)
 def test_crf_score(xseq, yseq, algorithm):
-    crf = CRF(algorithm)
+    crf = CRF(algorithm=algorithm)
     crf.fit([xseq], [yseq])
 
     score = crf.score([xseq], [yseq])
