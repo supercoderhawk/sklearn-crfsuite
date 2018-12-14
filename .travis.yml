@@ -1,38 +1,48 @@
 language: python
 sudo: false
 branches:
-    only:
-        - master
-        - /^\d\.\d+$/
-
+  only:
+  - master
 matrix:
   include:
-    - python: 2.7
-      env: TOXENV=py27
-    - python: 3.4
-      env: TOXENV=py34
-    - python: 3.5
-      env: TOXENV=py35
-    - python: 3.6
-      env: TOXENV=py36
-
+  - python: 2.7
+    env: TOXENV=py27
+  - python: 3.4
+    env: TOXENV=py34
+  - python: 3.5
+    env: TOXENV=py35
+  - python: 3.6
+    env: TOXENV=py36
+  - python: 3.7
+    env: TOXENV=py37
 addons:
-    apt:
-        packages:
-            - python-numpy
-            - python-scipy
-            - libatlas-base-dev
-            - liblapack-dev
-            - gfortran
-
+  apt:
+    packages:
+    - python-numpy
+    - python-scipy
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
 install:
-    - pip install -U pip tox codecov
-
+- pip install -U pip tox codecov
 script: travis_wait tox
-
 after_success:
-    - codecov
-
+- codecov
 cache:
-    directories:
-        - $HOME/.cache/pip
+  directories:
+  - "$HOME/.cache/pip"
+deploy:
+  - provider: pypi
+    on:
+      tag: true
+    skip_existing: true
+    user: supercoderhawk
+    password:
+      secure: kWpULOHQw4MDJSjghuLk4V/wnuCGuSgI528XzL+yzNnG++zPAkJ8vaNc9I9A+msnm7QLrrFQh1MQ86kkAWE1Np3jd3nqfQ4O2juClFkSQcjJsUuH8Ru1ChhfQrUCxSaXhYtRkItmuKp83/G/3jRIa8B06hpE/hS18H6cROKA5EjNPxPZ7TefBYZYipuuGTDq8l83mEVf5a4k+UCMaU9BhZdqUck+bYiOq1T0mLuc0EV3S8kVQ/XaLwcaT1S7BSwto7NVBedsOWPHD4czddRSAXhFmHykLiNNwCwx/nHeewsfh8UqTOBiHI3g3jo2JCh7un5QahhAy7kK50GWVErVVeHbtS7W9ofWilfjStRfvA3XpH1lx98m+Rrv71fJFEWXvX0h35JmtarB+j+EtQf9AZuNMrdlJ9eQ8JtEt39YjzorGOmJfOYxPTshE9qh0ArqHLJROco3y/jR9ybbhVjv9okD/8UDMYqEcRyVzco9tt43Igxqv6+E1iMneQsRZgd5DYRQ34Qorta3+aLxNyR3G+IavqoIahgIWtWS9G8y1uqyJXQ50E5PbB44SMPpiQ3wapzYlEuwnA+haCY84fBflU7wbTlwpYD7XRFw6Sot2vK1C7WZo1d54K9rgYdUOTNikCUCMXmQul59TgzOjwvSdDCjXRf9vqZtCUYe3P+eyfY=
+  - provider: releases
+    api_key: "8492ef6fd7bd5b057f0774b35b4a031f09d881ed"
+      file: "dist/*"
+      skip_cleanup: true
+      on:
+        tags: true
+        overwrite: true
