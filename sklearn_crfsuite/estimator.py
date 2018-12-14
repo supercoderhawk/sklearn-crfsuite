@@ -9,8 +9,15 @@ from sklearn_crfsuite._fileresource import FileResource
 from sklearn_crfsuite.trainer import LinePerIterationTrainer
 from sklearn_crfsuite.compat import BaseEstimator
 
+_LINE_CHAIN_CRF = '1d'
+_SEMI_MARKOV_CRF = 'semim'
+_TREE_CRF = 'tree'
+
 
 class CRF(BaseEstimator):
+    LINE_CHAIN_CRF = _LINE_CHAIN_CRF
+    SEMI_MARKOV_CRF = _SEMI_MARKOV_CRF
+    TREE_CRF = _TREE_CRF
     """
     python-crfsuite wrapper with interface siimlar to scikit-learn.
     It allows to use a familiar fit/predict interface and scikit-learn
@@ -21,6 +28,12 @@ class CRF(BaseEstimator):
 
     Parameters
     ----------
+    model_type: str, optional (default='CRF.LINE_CHAIN_CRF')
+        type of crf model
+        
+        * ``CRF.LINE_CHAIN_CRF`` - line chain CRF
+        * ``CRF.SEMI_MARKOV_CRF`` - semi markov CRF
+        * ``TREE_CRF`` - tree CRF
     algorithm : str, optional (default='lbfgs')
         Training algorithm. Allowed values:
 
@@ -58,7 +71,10 @@ class CRF(BaseEstimator):
         of labels in the training data is L, this function will
         generate (L * L) transition features.
         This function is disabled by default.
-
+    max_seg_len : int, optional (default=-1)
+        The max length of segment, only work in semi-markov model
+    max_order : int, optional (default=1)
+        Order number of crf model      
     c1 : float, optional (default=0)
         The coefficient for L1 regularization.
         If a non-zero value is specified, CRFsuite switches to the
@@ -207,12 +223,15 @@ class CRF(BaseEstimator):
         is to use pickle (or its alternatives like joblib).
 
     """
-    def __init__(self,
-                 algorithm=None,
 
+    def __init__(self,
+                 model_type=_LINE_CHAIN_CRF,
+                 algorithm=None,
                  min_freq=None,
                  all_possible_states=None,
                  all_possible_transitions=None,
+                 max_seg_len=-1,
+                 max_order=1,
                  c1=None,
                  c2=None,
                  max_iterations=None,
@@ -233,16 +252,17 @@ class CRF(BaseEstimator):
                  averaging=None,
                  variance=None,
                  gamma=None,
-
                  verbose=False,
                  model_filename=None,
                  keep_tempfiles=False,
                  trainer_cls=None):
-
+        self.model_type = model_type
         self.algorithm = algorithm
         self.min_freq = min_freq
         self.all_possible_states = all_possible_states
         self.all_possible_transitions = all_possible_transitions
+        self.max_seg_len = max_seg_len
+        self.max_order = max_order
         self.c1 = c1
         self.c2 = c2
         self.max_iterations = max_iterations
@@ -305,6 +325,9 @@ class CRF(BaseEstimator):
         self.modelfile.refresh()
 
         trainer = self._get_trainer()
+        trainer.select(self.algorithm, self.model_type)
+        trainer.set('feature.max_seg_len', str(self.max_seg_len))
+        trainer.set('feature.max_order', str(self.max_order))
         train_data = zip(X, y)
 
         if self.verbose:
@@ -425,7 +448,7 @@ class CRF(BaseEstimator):
                 return None
 
             tagger = pycrfsuite.Tagger()
-            tagger.open(self.modelfile.name)
+            tagger.open(self.modelfile.name, self.model_type)
             self._tagger = tagger
             self._info_cached = None
         return self._tagger
