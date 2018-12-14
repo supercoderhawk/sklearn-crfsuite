@@ -2,21 +2,21 @@
 from setuptools import setup
 
 setup(
-    name='sklearn-crfsuite',
-    version='0.3.6',
-    author='Mikhail Korobov',
-    author_email='kmike84@gmail.com',
+    name='sklearn-pycrfsuite',
+    version='0.4.0',
+    author='supercoderhawk, Mikhail Korobov',
+    author_email='supercoderhawk@gmail.com, kmike84@gmail.com',
     license='MIT license',
     long_description=open('README.rst').read() + "\n\n" + open('CHANGES.rst').read(),
     description="CRFsuite (python-crfsuite) wrapper which provides interface simlar to scikit-learn",
-    url='https://github.com/TeamHG-Memex/sklearn-crfsuite',
+    url='https://github.com/supercoderhawk/sklearn-crfsuite',
     zip_safe=False,
     packages=['sklearn_crfsuite'],
     install_requires=[
         "tqdm >= 2.0",
         "six",
         "tabulate",
-        "python-crfsuite >= 0.8.3"
+        "python-crfsuite-extension"
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
